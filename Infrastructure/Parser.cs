@@ -18,7 +18,14 @@ namespace EGRPparser.Infrastructure
 
         public void Parse()
         {
+            // меняем пути исходных данных на директорию выше 
+            DirectoryIdentify();
+
             // открытие исходного файла
+            Console.WriteLine("Положите в текущую папку файл, который нужно распознать. Переименуйте его в data.html");
+            Console.WriteLine("Для продолжения нажмите любую клавишу...");
+            Console.ReadLine();
+
             string html = ReadSourceHTML(dataPath);
             if (String.IsNullOrEmpty(html))
             {
@@ -64,8 +71,11 @@ namespace EGRPparser.Infrastructure
         {
             try
             {
-                
-                File.WriteAllLines(resultPath, estates.Select(es=>es.ToConsoleLine()));
+                string[] result = new string[estates.Count + 1];
+                result[0] = Estate.ToConsoleLineTitle();
+                estates.Select(es => es.ToConsoleLine()).ToArray().CopyTo(result, 1);
+
+                File.WriteAllLines(resultPath, result);
                 if (File.Exists(resultPath)) return true;
                 else return false;
             }
@@ -73,6 +83,13 @@ namespace EGRPparser.Infrastructure
             {
                 return false;
             }
+        }
+
+        void DirectoryIdentify()
+        {
+            string dir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+            dataPath = dir + @"\" + dataPath;
+            resultPath = dir + @"\" + resultPath;
         }
 
         #endregion
@@ -187,7 +204,7 @@ namespace EGRPparser.Infrastructure
 
         public void AddLog(string msg, bool isError = false)
         {
-            if (isError) msg = "[" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + "] ERROR: " + msg;
+            if (isError) msg = "ERROR: " + msg;
 
             Console.WriteLine("[" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + "] " + msg);
         }

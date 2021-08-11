@@ -10,7 +10,7 @@ namespace EGRPparser
         {
             Parser prs = new Parser();
             prs.Parse();
-            
+            Console.ReadLine();
 
             //ReadSourceHTML("data.txt");
         }  

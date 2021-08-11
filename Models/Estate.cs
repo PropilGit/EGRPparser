@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace EGRPparser.Models
 {
@@ -37,21 +39,22 @@ namespace EGRPparser.Models
         public static string GosRegBasisTitle = "основание государственной регистрации:";
 
         public List<RightsRestriction> RightsRestrictions { get; private set; }
-        public static string RightsRestrictionsTitle = "Ограничение права. Вид\tОграничение права. Номер гос. регистрации";
+        public static string RightsRestrictionsTitle = "Ограничения права";
 
         public Estate(int number, string kadastrNum, string name, string purpose, string area, string address, 
             string rightType, string gosRegDate, string gosRegNum, string gosRegBasis, List<RightsRestriction> rightsRestrictions)
         {
+
             Number = number;
-            KadastrNum = kadastrNum;
-            Name = name;
-            Purpose = purpose;
-            Area = area;
-            Address = address;
-            RightType = rightType;
-            GosRegDate = gosRegDate;
-            GosRegNum = gosRegNum;
-            GosRegBasis = gosRegBasis;
+            KadastrNum = NormalizeString(kadastrNum);
+            Name = NormalizeString(name);
+            Purpose = NormalizeString(purpose);
+            Area = NormalizeString(area);
+            Address = NormalizeString(address);
+            RightType = NormalizeString(rightType);
+            GosRegDate = NormalizeString(gosRegDate);
+            GosRegNum = NormalizeString(gosRegNum);
+            GosRegBasis = NormalizeString( gosRegBasis);
             RightsRestrictions = rightsRestrictions;
         }
 
@@ -67,16 +70,27 @@ namespace EGRPparser.Models
 
             public RightsRestriction(string type, string gosRegNum)
             {
-                Type = type;
-                GosRegNum = gosRegNum;
+                Type = NormalizeString(type);
+                GosRegNum = NormalizeString(gosRegNum);
             }
 
-            public string ToConsoleLine { get => Type + "\t" + GosRegNum + "\t"; }
+            public string ToConsoleLine { get => Type + ", " + GosRegNum + "; "; }
         }
 
         public static Estate ErrorEstate = new Estate(
             0, "---", "---", "---", "---", "---", "---", "---", "---", "---",
             new List<Estate.RightsRestriction> { new Estate.RightsRestriction("---", "---") });
+
+        static string NormalizeString(string input)
+        {
+            string[] replaceables = new[] { "\n", "\t", "\r" };
+            string rxString = string.Join("|", replaceables.Select(s => Regex.Escape(s)));
+
+            string result = Regex.Replace(input, rxString, " ");
+            result = Regex.Replace(result, @"[ ]{2,}", " ");
+
+            return result;
+        }
 
         public string ToConsoleLine()
         {
