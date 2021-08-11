@@ -1,13 +1,10 @@
 ﻿using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
-using AngleSharp.XPath;
 using EGRPparser.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace EGRPparser.Infrastructure
 {

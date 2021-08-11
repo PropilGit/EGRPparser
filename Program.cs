@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using EGRPparser.Infrastructure;
 
 namespace EGRPparser
@@ -9,10 +8,10 @@ namespace EGRPparser
         static void Main(string[] args)
         {
             Parser prs = new Parser();
-            prs.Parse();
-            Console.ReadLine();
 
-            //ReadSourceHTML("data.txt");
+            prs.Parse();
+
+            Console.ReadLine();
         }  
     }
 }
