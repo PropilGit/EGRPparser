@@ -15,7 +15,12 @@ namespace EGRPparser.Models
         public string Name { get; private set; }
         public static string NameTitle = "наименование объекта";
 
-        public string Purpose { get; private set; }
+        public string Purpose { 
+            get => purpose; 
+            private set {
+                purpose = Regex.Replace(value, @"^[0-9|)|.]+", "").Trim();
+            }
+        }
         public static string PurposeTitle = "назначение объекта";
 
         public string Area { get; private set; }
@@ -39,7 +44,7 @@ namespace EGRPparser.Models
         public List<RightsRestriction> RightsRestrictions { get; private set; }
         public static string RightsRestrictionsTitle = "Ограничения права";
 
-        public Estate(int number, string kadastrNum, string name, string purpose, string area, string address, 
+        public Estate(int number, string kadastrNum, string name, string purpose, string area, string address,
             string rightType, string gosRegDate, string gosRegNum, string gosRegBasis, List<RightsRestriction> rightsRestrictions)
         {
 
@@ -52,7 +57,7 @@ namespace EGRPparser.Models
             RightType = NormalizeString(rightType);
             GosRegDate = NormalizeString(gosRegDate);
             GosRegNum = NormalizeString(gosRegNum);
-            GosRegBasis = NormalizeString( gosRegBasis);
+            GosRegBasis = NormalizeString(gosRegBasis);
             RightsRestrictions = rightsRestrictions;
         }
 
@@ -78,6 +83,7 @@ namespace EGRPparser.Models
         public static Estate ErrorEstate = new Estate(
             0, "---", "---", "---", "---", "---", "---", "---", "---", "---",
             new List<Estate.RightsRestriction> { new Estate.RightsRestriction("---", "---") });
+        private string purpose;
 
         static string NormalizeString(string input)
         {
