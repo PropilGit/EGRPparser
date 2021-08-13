@@ -21,6 +21,7 @@ namespace EGRPparser.Models
                 purpose = Regex.Replace(value, @"^[0-9|)|.]+", "").Trim();
             }
         }
+        private string purpose;
         public static string PurposeTitle = "назначение объекта";
 
         public string Area { get; private set; }
@@ -83,7 +84,6 @@ namespace EGRPparser.Models
         public static Estate ErrorEstate = new Estate(
             0, "---", "---", "---", "---", "---", "---", "---", "---", "---",
             new List<Estate.RightsRestriction> { new Estate.RightsRestriction("---", "---") });
-        private string purpose;
 
         static string NormalizeString(string input)
         {

@@ -203,7 +203,7 @@ namespace EGRPparser.Infrastructure
         {
             if (isError) msg = "ERROR: " + msg;
 
-            Console.WriteLine("[" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + "] " + msg);
+            Console.WriteLine("[" + DateTime.Now.ToString("hh:mm:ss") + "] " + msg);
         }
 
         #endregion
