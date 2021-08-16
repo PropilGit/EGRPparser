@@ -12,7 +12,15 @@ namespace EGRPparser.Models
         public string KadastrNum { get; private set; }
         public static string KadastrNumTitle = "Кадастровый (или условный) номер объекта";
 
-        public string Name { get; private set; }
+        public string Name
+        {
+            get => name;
+            private set
+            {
+                name = value.ToLower();
+            }
+        }
+        private string name;
         public static string NameTitle = "наименование объекта";
 
         public string Purpose { 
@@ -87,27 +95,30 @@ namespace EGRPparser.Models
 
         static string NormalizeString(string input)
         {
-            string[] replaceables = new[] { "\n", "\t", "\r" };
+            string[] replaceables = new[] { "\n", "\t", "\r", " " };
             string rxString = string.Join("|", replaceables.Select(s => Regex.Escape(s)));
 
             string result = Regex.Replace(input, rxString, " ");
             result = Regex.Replace(result, @"[ ]{2,}", " ");
 
+            if (result == " ") 
+                result = "";
+
             return result;
         }
 
-        public string ToConsoleLine()
+        public string DataToLine()
         {
             string text = Number.ToString() + "\t" +
-                KadastrNum + "\t" +
-                Name + "\t" +
-                Purpose + "\t" +
-                Area + "\t" +
-                Address + "\t" +
-                RightType + "\t" +
-                GosRegDate + "\t" +
-                GosRegNum + "\t" +
-                GosRegBasis + "\t";
+                    KadastrNum + "\t" +
+                    Name + "\t" +
+                    Purpose + "\t" +
+                    Area + "\t" +
+                    Address + "\t" +
+                    RightType + "\t" +
+                    GosRegDate + "\t" +
+                    GosRegNum + "\t" +
+                    GosRegBasis + "\t";
 
             foreach (var rR in RightsRestrictions)
             {
@@ -116,20 +127,33 @@ namespace EGRPparser.Models
 
             return text;
         }
-
-        public static string ToConsoleLineTitle()
+        public static string TitleToLine()
         {
             return NumberTitle + "\t" +
-                KadastrNumTitle + "\t" +
-                NameTitle + "\t" +
-                PurposeTitle + "\t" +
-                AreaTitle + "\t" +
-                AddressTitle + "\t" +
-                RightTypeTitle + "\t" +
-                GosRegDateTitle + "\t" +
-                GosRegNumTitle + "\t" +
-                GosRegBasisTitle + "\t" +
-                RightsRestrictionsTitle;
+                    KadastrNumTitle + "\t" +
+                    NameTitle + "\t" +
+                    PurposeTitle + "\t" +
+                    AreaTitle + "\t" +
+                    AddressTitle + "\t" +
+                    RightTypeTitle + "\t" +
+                    GosRegDateTitle + "\t" +
+                    GosRegNumTitle + "\t" +
+                    GosRegBasisTitle + "\t" +
+                    RightsRestrictionsTitle;
+        }
+
+        // инвентарная опись
+        public string ToInventoryLine()
+        {
+            string text = Number.ToString() + "\t" +
+                    "Нежилое " + Name + ", с кадастровым номером " + KadastrNum + ", по адресу " + Address;
+
+            if (Area == "") text += "\t";
+            else text += ", площадью " + Area + "\t";
+
+            text += KadastrNum + "\t";
+
+            return text;
         }
     }
 }

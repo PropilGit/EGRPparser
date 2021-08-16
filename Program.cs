@@ -8,7 +8,6 @@ namespace EGRPparser
         static void Main(string[] args)
         {
             Parser prs = new Parser();
-
             prs.Parse();
 
             Console.ReadLine();

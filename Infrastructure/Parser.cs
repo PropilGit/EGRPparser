@@ -12,6 +12,7 @@ namespace EGRPparser.Infrastructure
     {
         string dataPath = "data.html";
         string resultPath = "result.txt";
+        string inventoryPath = "inventory.txt";
 
         public void Parse()
         {
@@ -52,7 +53,8 @@ namespace EGRPparser.Infrastructure
                 Console.ReadLine();
             }
             //WriteEstatesToConsole(estates);
-            if (WriteResultToFile(estates)) Console.WriteLine("Таблица сохранена в файле result.txt");
+            if (WriteDataToFile(estates)) Console.WriteLine("Данные сохранены в файле " + resultPath);
+            if (WriteInventoryToFile(estates)) Console.WriteLine("Инвентарная опись сохранена в файле " + inventoryPath);
             else AddLog("Не удалось сохранить таблицу!", true);
         }
 
@@ -64,19 +66,32 @@ namespace EGRPparser.Infrastructure
             else return null;
         }
 
-        bool WriteResultToFile(List<Estate> estates)
+        bool WriteDataToFile(List<Estate> estates)
         {
             try
             {
                 string[] result = new string[estates.Count + 1];
-                result[0] = Estate.ToConsoleLineTitle();
-                estates.Select(es => es.ToConsoleLine()).ToArray().CopyTo(result, 1);
+                result[0] = Estate.TitleToLine();
+                estates.Select(es => es.DataToLine()).ToArray().CopyTo(result, 1);
 
                 File.WriteAllLines(resultPath, result);
                 if (File.Exists(resultPath)) return true;
                 else return false;
             }
-            catch (Exception ex)
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        bool WriteInventoryToFile(List<Estate> estates)
+        {
+            try
+            {
+                File.WriteAllLines(inventoryPath, estates.Select(es => es.ToInventoryLine()));
+                if (File.Exists(inventoryPath)) return true;
+                else return false;
+            }
+            catch (Exception)
             {
                 return false;
             }
@@ -87,6 +102,7 @@ namespace EGRPparser.Infrastructure
             string dir = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
             dataPath = dir + @"\" + dataPath;
             resultPath = dir + @"\" + resultPath;
+            inventoryPath = dir + @"\" + inventoryPath;
         }
 
         #endregion
@@ -126,7 +142,7 @@ namespace EGRPparser.Infrastructure
 
                 return estates;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -160,7 +176,7 @@ namespace EGRPparser.Infrastructure
 
                 return new Estate(estateIndex, kadastrNum, name, purpose, area, address, rightType, gosRegDate, gosRegNum, gosRegBasis, rR);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -171,7 +187,7 @@ namespace EGRPparser.Infrastructure
 
             foreach (var e in estates)
             {
-                Console.WriteLine(e.ToConsoleLine());
+                Console.WriteLine(e.DataToLine());
             }
         }
 
@@ -189,7 +205,7 @@ namespace EGRPparser.Infrastructure
                 //return document.Body.SelectNodes("/html/body/div/div/table[2]/tbody/tr");
                 return document.QuerySelectorAll(selector);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
