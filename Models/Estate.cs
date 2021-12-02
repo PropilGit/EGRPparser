@@ -53,6 +53,9 @@ namespace EGRPparser.Models
         public List<RightsRestriction> RightsRestrictions { get; private set; }
         public static string RightsRestrictionsTitle = "Ограничения права";
 
+        //public string PermittedUseEstablished { get; private set; }
+        //public static string PermittedUseEstablishedTitle = "Ограничения права";
+
         public Estate(int number, string kadastrNum, string name, string purpose, string area, string address,
             string rightType, string gosRegDate, string gosRegNum, string gosRegBasis, List<RightsRestriction> rightsRestrictions)
         {
@@ -68,6 +71,7 @@ namespace EGRPparser.Models
             GosRegNum = NormalizeString(gosRegNum);
             GosRegBasis = NormalizeString(gosRegBasis);
             RightsRestrictions = rightsRestrictions;
+            
         }
 
         public struct RightsRestriction

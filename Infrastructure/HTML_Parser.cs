@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace EGRPparser.Infrastructure
 {
-    class Parser
+    class HTML_Parser
     {
         string dataPath = "data.html";
         string resultPath = "result.txt";

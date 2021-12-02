@@ -7,7 +7,7 @@ namespace EGRPparser
     {
         static void Main(string[] args)
         {
-            Parser prs = new Parser();
+            XML_Parser prs = new XML_Parser();
             prs.Parse();
 
             Console.ReadLine();
