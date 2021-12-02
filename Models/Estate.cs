@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -6,56 +7,6 @@ namespace EGRPparser.Models
 {
     class Estate
     {
-        public int Number { get; private set; }
-        public static string NumberTitle = "№ п/п";
-
-        public string KadastrNum { get; private set; }
-        public static string KadastrNumTitle = "Кадастровый (или условный) номер объекта";
-
-        public string Name
-        {
-            get => name;
-            private set
-            {
-                name = value.ToLower();
-            }
-        }
-        private string name;
-        public static string NameTitle = "наименование объекта";
-
-        public string Purpose { 
-            get => purpose; 
-            private set {
-                purpose = Regex.Replace(value, @"^[0-9|)|.]+", "").Trim();
-            }
-        }
-        private string purpose;
-        public static string PurposeTitle = "назначение объекта";
-
-        public string Area { get; private set; }
-        public static string AreaTitle = "площадь объекта";
-
-        public string Address { get; private set; }
-        public static string AddressTitle = "адрес (местоположение) объекта";
-
-        public string RightType { get; private set; }
-        public static string RightTypeTitle = "Вид права, доля в праве";
-
-        public string GosRegDate { get; private set; }
-        public static string GosRegDateTitle = "дата государственной регистрации:";
-
-        public string GosRegNum { get; private set; }
-        public static string GosRegNumTitle = "номер государственной регистрации:";
-
-        public string GosRegBasis { get; private set; }
-        public static string GosRegBasisTitle = "основание государственной регистрации:";
-
-        public List<RightsRestriction> RightsRestrictions { get; private set; }
-        public static string RightsRestrictionsTitle = "Ограничения права";
-
-        //public string PermittedUseEstablished { get; private set; }
-        //public static string PermittedUseEstablishedTitle = "Ограничения права";
-
         public Estate(int number, string kadastrNum, string name, string purpose, string area, string address,
             string rightType, string gosRegDate, string gosRegNum, string gosRegBasis, List<RightsRestriction> rightsRestrictions)
         {
@@ -71,12 +22,60 @@ namespace EGRPparser.Models
             GosRegNum = NormalizeString(gosRegNum);
             GosRegBasis = NormalizeString(gosRegBasis);
             RightsRestrictions = rightsRestrictions;
-            
+
         }
+
+        #region Fileds
+
+        public int Number { get; private set; }
+        public static string NumberTitle = "№ п/п";
+
+        public string KadastrNum { get; private set; }
+        public static string KadastrNumTitle = "Кадастровый номер";
+
+        public string Name
+        {
+            get => name;
+            private set
+            {
+                name = value.ToLower();
+            }
+        }
+        private string name;
+        public static string NameTitle = "Наименование";
+
+        public string Purpose { 
+            get => purpose; 
+            private set {
+                purpose = Regex.Replace(value, @"^[0-9|)|.]+", "").Trim();
+            }
+        }
+        private string purpose;
+        public static string PurposeTitle = "Назначение";
+
+        public string Area { get; private set; }
+        public static string AreaTitle = "Площадь";
+
+        public string Address { get; private set; }
+        public static string AddressTitle = "Адрес (местоположение)";
+
+        public string RightType { get; private set; }
+        public static string RightTypeTitle = "Вид права, доля в праве";
+
+        public string GosRegDate { get; private set; }
+        public static string GosRegDateTitle = "Дата гос. регистрации";
+
+        public string GosRegNum { get; private set; }
+        public static string GosRegNumTitle = "Номер гос. регистрации";
+
+        public string GosRegBasis { get; private set; }
+        public static string GosRegBasisTitle = "Основание гос. регистрации";
+
+        public List<RightsRestriction> RightsRestrictions { get; private set; }
+        public static string RightsRestrictionsTitle = "Ограничения права";
 
         public struct RightsRestriction
         {
-            //public int Number { get; private set; }
 
             // вид:
             public string Type { get; private set; }
@@ -93,11 +92,17 @@ namespace EGRPparser.Models
             public string ToConsoleLine { get => Type + ", " + GosRegNum + "; "; }
         }
 
-        public static Estate ErrorEstate = new Estate(
-            0, "---", "---", "---", "---", "---", "---", "---", "---", "---",
-            new List<Estate.RightsRestriction> { new Estate.RightsRestriction("---", "---") });
+        #endregion
 
-        static string NormalizeString(string input)
+        #region Static
+
+        public static Estate ErrorEstate = new Estate( 0, "---", "---", "---", "---", "---", "---", "---", "---", "---", new List<Estate.RightsRestriction> { new Estate.RightsRestriction("---", "---") });
+
+        #endregion
+
+        #region Normalize
+
+        public static string NormalizeString(string input)
         {
             string[] replaceables = new[] { "\n", "\t", "\r", " " };
             string rxString = string.Join("|", replaceables.Select(s => Regex.Escape(s)));
@@ -110,6 +115,28 @@ namespace EGRPparser.Models
 
             return result;
         }
+
+        public static string NormalizeDate(string input)
+        {
+            try
+            {
+                DateTime date = DateTime.Parse(input);
+                return NormalizeString(date.Day + "." + date.Month + "." + date.Year);
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+
+        public static string NormalizeNumber(string input)
+        {
+            return NormalizeString(input.Replace(".", ","));
+        }
+
+        #endregion
+
+        #region ToLine
 
         public string DataToLine()
         {
@@ -131,7 +158,8 @@ namespace EGRPparser.Models
 
             return text;
         }
-        public static string TitleToLine()
+
+        public static string TitleToLine() //базовая таблица
         {
             return NumberTitle + "\t" +
                     KadastrNumTitle + "\t" +
@@ -146,8 +174,7 @@ namespace EGRPparser.Models
                     RightsRestrictionsTitle;
         }
 
-        // инвентарная опись
-        public string ToInventoryLine()
+        public string ToInventoryLine() // инвентарная опись
         {
             string text = Number.ToString() + "\t" +
                     "Нежилое " + Name + ", с кадастровым номером " + KadastrNum + ", по адресу " + Address;
@@ -159,5 +186,7 @@ namespace EGRPparser.Models
 
             return text;
         }
+
+        #endregion
     }
 }
